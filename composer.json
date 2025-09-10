@@ -1,0 +1,21 @@
+{
+    "name": "goldoni/laravel-virtual-wallet",
+    "description": "Virtual multi-wallet for Laravel with entries, transfers, enums and configurable table prefix",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Goldoni\\LaravelVirtualWallet\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Goldoni\\LaravelVirtualWallet\\WalletServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.2"
+    }
+}
