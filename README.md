@@ -15,7 +15,7 @@
 - ✅ **Fluent** API:
   ```php
   Wallet::for($user)->label('main')->currency('EUR')->credit('100.00');
-````
+
 
 ---
 
@@ -23,7 +23,6 @@
 
 * PHP **8.2+**
 * Laravel (provided by the host application)
-* PHP extension **ext-bcmath**
 * Any DB supported by Laravel that handles `decimal(20,8)`
 
 ---
@@ -320,3 +319,6 @@ Your replacements must keep compatible columns and relations:
 ## 📄 License
 
 MIT
+
+```
+```
