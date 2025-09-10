@@ -3,6 +3,19 @@
     "description": "Virtual multi-wallet for Laravel with entries, transfers, enums and configurable table prefix",
     "type": "library",
     "license": "MIT",
+    "keywords": ["laravel", "wallet", "virtual wallet", "multiwallet", "ledger", "balance", "payments"],
+    "homepage": "https://github.com/fgoldoni/laravel-virtual-wallet",
+    "support": {
+        "issues": "https://github.com/fgoldoni/laravel-virtual-wallet/issues",
+        "source": "https://github.com/fgoldoni/laravel-virtual-wallet"
+    },
+    "authors": [
+        {
+            "name": "Goldoni",
+            "role": "Developer",
+            "email": "fotsa.goldoni@yahoo.fr"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Goldoni\\LaravelVirtualWallet\\": "src/"
@@ -17,5 +30,7 @@
     },
     "require": {
         "php": "^8.2"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
