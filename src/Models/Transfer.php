@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Goldoni\LaravelVirtualWallet\Models;
 
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -23,7 +24,7 @@ class Transfer extends Model
     ];
 
     protected $casts = [
-        'meta'   => 'array',
+        'meta'   => AsArrayObject::class,
         'amount' => 'decimal:8',
     ];
 

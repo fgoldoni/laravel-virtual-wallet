@@ -28,7 +28,7 @@ class WalletService
 
     public function for(Model $model): self
     {
-        $instance           = new self();
+        $instance           = new self;
         $instance->owner    = $model;
         $instance->label    = 'main';
         $instance->currency = config('wallet.default_currency', 'EUR');
@@ -65,7 +65,7 @@ class WalletService
                     ->first();
 
                 if ($existing) {
-                    throw new DuplicateOperation();
+                    throw new DuplicateOperation;
                 }
             }
 
@@ -112,8 +112,7 @@ class WalletService
             $newBalance    = bcsub((string) $lockedWallet->balance, $amount, $precision);
 
             if (!$allowNegative && bccomp($newBalance, '0', $precision) < 0) {
-                $insufficientClass = InsufficientFunds::class;
-                throw new $insufficientClass();
+                throw new InsufficientFunds;
             }
 
             if (!empty($options['idempotency_key'])) {
@@ -122,7 +121,7 @@ class WalletService
                     ->first();
 
                 if ($existing) {
-                    throw new DuplicateOperation();
+                    throw new DuplicateOperation;
                 }
             }
 
@@ -167,7 +166,7 @@ class WalletService
                 $existing      = $transferClass::where('idempotency_key', $options['idempotency_key'])->first();
 
                 if ($existing) {
-                    throw new DuplicateOperation();
+                    throw new DuplicateOperation;
                 }
             }
 
@@ -190,13 +189,25 @@ class WalletService
             $transferClass  = config('wallet.models.transfer');
             $transferStatus = config('wallet.enums.transfer_status');
 
+            $status = $transferStatus::COMPLETED;
+
+            if (array_key_exists('status', $options)) {
+                $statusOption = $options['status'];
+
+                if ($statusOption instanceof $transferStatus) {
+                    $status = $statusOption;
+                } elseif (is_string($statusOption)) {
+                    $status = $transferStatus::tryFrom(strtoupper($statusOption)) ?? $transferStatus::COMPLETED;
+                }
+            }
+
             $transfer = $transferClass::create([
                 'uuid'            => (string) Str::uuid(),
                 'from_wallet_id'  => $fromWallet->id,
                 'to_wallet_id'    => $toWallet->id,
                 'amount'          => $amount,
                 'currency'        => $fromWallet->currency,
-                'status'          => $transferStatus::COMPLETED,
+                'status'          => $status,
                 'idempotency_key' => $options['idempotency_key'] ?? null,
                 'meta'            => $options['meta'] ?? null,
             ]);
@@ -286,15 +297,14 @@ class WalletService
     {
         if (!is_numeric($amount)) {
             $invalidClass = InvalidAmount::class;
-            throw new $invalidClass();
+            throw new $invalidClass;
         }
 
         $precision  = (int) config('wallet.precision', 8);
         $normalized = number_format((float) $amount, $precision, '.', '');
 
         if (bccomp($normalized, '0', $precision) <= 0) {
-            $invalidClass = InvalidAmount::class;
-            throw new $invalidClass();
+            throw new InvalidAmount;
         }
 
         return $normalized;
@@ -304,7 +314,7 @@ class WalletService
     {
         if (strtoupper($left) !== strtoupper($right)) {
             $mismatchClass = CurrencyMismatch::class;
-            throw new $mismatchClass();
+            throw new $mismatchClass;
         }
     }
 
@@ -315,7 +325,7 @@ class WalletService
         $newBalance    = bcsub((string) $model->balance, $amount, $precision);
 
         if (!$allowNegative && bccomp($newBalance, '0', $precision) < 0) {
-            throw new InsufficientFunds();
+            throw new InsufficientFunds;
         }
 
         $entryType   = config('wallet.enums.entry_type');

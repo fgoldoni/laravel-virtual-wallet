@@ -311,8 +311,6 @@ Your replacements must keep compatible columns and relations:
 ## 🧹 Coding Standards
 
 * PSR-12 compliant
-* camelCase identifiers
-* No abbreviations and no inline comments
 
 ---
 
