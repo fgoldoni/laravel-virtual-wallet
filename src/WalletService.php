@@ -28,9 +28,9 @@ class WalletService
 
     public function for(Model $model): self
     {
-        $instance = new self();
-        $instance->owner = $model;
-        $instance->label = 'main';
+        $instance           = new self();
+        $instance->owner    = $model;
+        $instance->label    = 'main';
         $instance->currency = config('wallet.default_currency', 'EUR');
 
         return $instance;
@@ -53,10 +53,10 @@ class WalletService
     public function credit(string $amount, array $options = [], ?string $label = null, ?string $currency = null): self
     {
         return DB::transaction(function () use ($amount, $options, $label, $currency): self {
-            $model = $this->resolveWallet($label, $currency);
-            $walletClass = config('wallet.models.wallet');
+            $model        = $this->resolveWallet($label, $currency);
+            $walletClass  = config('wallet.models.wallet');
             $lockedWallet = $walletClass::whereKey($model->id)->lockForUpdate()->first();
-            $amount = $this->normalizePositiveAmount($amount);
+            $amount       = $this->normalizePositiveAmount($amount);
             $this->assertCurrency($options['currency'] ?? $lockedWallet->currency, $lockedWallet->currency);
 
             if (!empty($options['idempotency_key'])) {
@@ -69,23 +69,23 @@ class WalletService
                 }
             }
 
-            $precision = (int) config('wallet.precision', 8);
-            $newBalance = bcadd((string) $lockedWallet->balance, $amount, $precision);
-            $entryType = config('wallet.enums.entry_type');
+            $precision   = (int) config('wallet.precision', 8);
+            $newBalance  = bcadd((string) $lockedWallet->balance, $amount, $precision);
+            $entryType   = config('wallet.enums.entry_type');
             $entryStatus = config('wallet.enums.entry_status');
 
             $entry = $lockedWallet->entries()->create([
-                'wallet_id' => $lockedWallet->id,
-                'uuid' => (string) Str::uuid(),
-                'type' => $entryType::CREDIT,
-                'status' => $entryStatus::COMPLETED,
-                'amount' => $amount,
-                'balance_after' => $newBalance,
-                'currency' => $lockedWallet->currency,
-                'reference_type' => $options['reference_type'] ?? null,
-                'reference_id' => $options['reference_id'] ?? null,
+                'wallet_id'       => $lockedWallet->id,
+                'uuid'            => (string) Str::uuid(),
+                'type'            => $entryType::CREDIT,
+                'status'          => $entryStatus::COMPLETED,
+                'amount'          => $amount,
+                'balance_after'   => $newBalance,
+                'currency'        => $lockedWallet->currency,
+                'reference_type'  => $options['reference_type'] ?? null,
+                'reference_id'    => $options['reference_id'] ?? null,
                 'idempotency_key' => $options['idempotency_key'] ?? null,
-                'meta' => $options['meta'] ?? null,
+                'meta'            => $options['meta'] ?? null,
             ]);
 
             $lockedWallet->update(['balance' => $newBalance]);
@@ -101,15 +101,15 @@ class WalletService
     public function debit(string $amount, array $options = [], ?string $label = null, ?string $currency = null): self
     {
         return DB::transaction(function () use ($amount, $options, $label, $currency): self {
-            $model = $this->resolveWallet($label, $currency);
-            $walletClass = config('wallet.models.wallet');
+            $model        = $this->resolveWallet($label, $currency);
+            $walletClass  = config('wallet.models.wallet');
             $lockedWallet = $walletClass::whereKey($model->id)->lockForUpdate()->first();
-            $amount = $this->normalizePositiveAmount($amount);
+            $amount       = $this->normalizePositiveAmount($amount);
             $this->assertCurrency($options['currency'] ?? $lockedWallet->currency, $lockedWallet->currency);
 
-            $precision = (int) config('wallet.precision', 8);
+            $precision     = (int) config('wallet.precision', 8);
             $allowNegative = (bool) config('wallet.allow_negative', false);
-            $newBalance = bcsub((string) $lockedWallet->balance, $amount, $precision);
+            $newBalance    = bcsub((string) $lockedWallet->balance, $amount, $precision);
 
             if (!$allowNegative && bccomp($newBalance, '0', $precision) < 0) {
                 $insufficientClass = InsufficientFunds::class;
@@ -126,21 +126,21 @@ class WalletService
                 }
             }
 
-            $entryType = config('wallet.enums.entry_type');
+            $entryType   = config('wallet.enums.entry_type');
             $entryStatus = config('wallet.enums.entry_status');
 
             $entry = $lockedWallet->entries()->create([
-                'wallet_id' => $lockedWallet->id,
-                'uuid' => (string) Str::uuid(),
-                'type' => $entryType::DEBIT,
-                'status' => $entryStatus::COMPLETED,
-                'amount' => bcmul($amount, '-1', $precision),
-                'balance_after' => $newBalance,
-                'currency' => $lockedWallet->currency,
-                'reference_type' => $options['reference_type'] ?? null,
-                'reference_id' => $options['reference_id'] ?? null,
+                'wallet_id'       => $lockedWallet->id,
+                'uuid'            => (string) Str::uuid(),
+                'type'            => $entryType::DEBIT,
+                'status'          => $entryStatus::COMPLETED,
+                'amount'          => bcmul($amount, '-1', $precision),
+                'balance_after'   => $newBalance,
+                'currency'        => $lockedWallet->currency,
+                'reference_type'  => $options['reference_type'] ?? null,
+                'reference_id'    => $options['reference_id'] ?? null,
                 'idempotency_key' => $options['idempotency_key'] ?? null,
-                'meta' => $options['meta'] ?? null,
+                'meta'            => $options['meta'] ?? null,
             ]);
 
             $lockedWallet->update(['balance' => $newBalance]);
@@ -155,17 +155,16 @@ class WalletService
 
     public function transfer(Model $model, string $amount, array $options = [], ?string $fromLabel = null, ?string $toLabel = 'main', ?string $currency = null): self
     {
-        return DB::transaction(function () use ( $model, $amount, $options, $fromLabel,  $toLabel, $currency): self
-        {
+        return DB::transaction(function () use ($model, $amount, $options, $fromLabel, $toLabel, $currency): self {
             $fromWallet = $this->resolveWallet($fromLabel, $currency);
-            $toWallet = $model->wallet($toLabel ?: 'main', $currency ? strtoupper($currency) : $this->currency);
+            $toWallet   = $model->wallet($toLabel ?: 'main', $currency ? strtoupper($currency) : $this->currency);
             $this->assertCurrency($fromWallet->currency, $toWallet->currency);
 
             $amount = $this->normalizePositiveAmount($amount);
 
             if (!empty($options['idempotency_key'])) {
                 $transferClass = config('wallet.models.transfer');
-                $existing = $transferClass::where('idempotency_key', $options['idempotency_key'])->first();
+                $existing      = $transferClass::where('idempotency_key', $options['idempotency_key'])->first();
 
                 if ($existing) {
                     throw new DuplicateOperation();
@@ -174,10 +173,10 @@ class WalletService
 
             $walletClass = config('wallet.models.wallet');
 
-            $firstId = min($fromWallet->id, $toWallet->id);
+            $firstId  = min($fromWallet->id, $toWallet->id);
             $secondId = max($fromWallet->id, $toWallet->id);
 
-            $firstLock = $walletClass::whereKey($firstId)->lockForUpdate()->first();
+            $firstLock  = $walletClass::whereKey($firstId)->lockForUpdate()->first();
             $secondLock = $walletClass::whereKey($secondId)->lockForUpdate()->first();
 
             if ($fromWallet->id === $firstLock->id) {
@@ -188,18 +187,18 @@ class WalletService
                 $this->applyCreditOnLocked($firstLock, $amount, $options, 'in');
             }
 
-            $transferClass = config('wallet.models.transfer');
+            $transferClass  = config('wallet.models.transfer');
             $transferStatus = config('wallet.enums.transfer_status');
 
             $transfer = $transferClass::create([
-                'uuid' => (string) Str::uuid(),
-                'from_wallet_id' => $fromWallet->id,
-                'to_wallet_id' => $toWallet->id,
-                'amount' => $amount,
-                'currency' => $fromWallet->currency,
-                'status' => $transferStatus::COMPLETED,
+                'uuid'            => (string) Str::uuid(),
+                'from_wallet_id'  => $fromWallet->id,
+                'to_wallet_id'    => $toWallet->id,
+                'amount'          => $amount,
+                'currency'        => $fromWallet->currency,
+                'status'          => $transferStatus::COMPLETED,
                 'idempotency_key' => $options['idempotency_key'] ?? null,
-                'meta' => $options['meta'] ?? null,
+                'meta'            => $options['meta'] ?? null,
             ]);
 
             DB::afterCommit(function () use ($transfer): void {
@@ -217,7 +216,7 @@ class WalletService
         return $model->entries()->orderByDesc('id')->limit($limit)->get();
     }
 
-    public function historyBetween( string $fromDate, string $toDate, ?string $label = null, ?string $currency = null): Collection
+    public function historyBetween(string $fromDate, string $toDate, ?string $label = null, ?string $currency = null): Collection
     {
         $model = $this->resolveWallet($label, $currency);
 
@@ -227,13 +226,15 @@ class WalletService
             ->get();
     }
 
-    public function paginateHistory( int $perPage = 50, ?string $label = null, ?string $currency = null): LengthAwarePaginator {
+    public function paginateHistory(int $perPage = 50, ?string $label = null, ?string $currency = null): LengthAwarePaginator
+    {
         $model = $this->resolveWallet($label, $currency);
 
         return $model->entries()->orderByDesc('id')->paginate($perPage);
     }
 
-    public function cursorHistory( int $perPage = 50, ?string $label = null, ?string $currency = null ): CursorPaginator {
+    public function cursorHistory(int $perPage = 50, ?string $label = null, ?string $currency = null): CursorPaginator
+    {
         $model = $this->resolveWallet($label, $currency);
 
         return $model->entries()->orderByDesc('id')->cursorPaginate($perPage);
@@ -275,7 +276,7 @@ class WalletService
 
     protected function resolveWallet(?string $label = null, ?string $currency = null): Model
     {
-        $finalLabel = $label ?: $this->label;
+        $finalLabel    = $label ?: $this->label;
         $finalCurrency = strtoupper($currency ?: $this->currency);
 
         return $this->owner->wallet($finalLabel, $finalCurrency);
@@ -288,7 +289,7 @@ class WalletService
             throw new $invalidClass();
         }
 
-        $precision = (int) config('wallet.precision', 8);
+        $precision  = (int) config('wallet.precision', 8);
         $normalized = number_format((float) $amount, $precision, '.', '');
 
         if (bccomp($normalized, '0', $precision) <= 0) {
@@ -307,28 +308,29 @@ class WalletService
         }
     }
 
-    protected function applyDebitOnLocked( Model $model, string $amount, array $options, string $direction): Model {
-        $precision = (int) config('wallet.precision', 8);
+    protected function applyDebitOnLocked(Model $model, string $amount, array $options, string $direction): Model
+    {
+        $precision     = (int) config('wallet.precision', 8);
         $allowNegative = (bool) config('wallet.allow_negative', false);
-        $newBalance = bcsub((string) $model->balance, $amount, $precision);
+        $newBalance    = bcsub((string) $model->balance, $amount, $precision);
 
         if (!$allowNegative && bccomp($newBalance, '0', $precision) < 0) {
             throw new InsufficientFunds();
         }
 
-        $entryType = config('wallet.enums.entry_type');
+        $entryType   = config('wallet.enums.entry_type');
         $entryStatus = config('wallet.enums.entry_status');
 
         $entry = $model->entries()->create([
-            'wallet_id' => $model->id,
-            'uuid' => (string) Str::uuid(),
-            'type' => $entryType::DEBIT,
-            'status' => $entryStatus::COMPLETED,
-            'amount' => bcmul($amount, '-1', $precision),
-            'balance_after' => $newBalance,
-            'currency' => $model->currency,
-            'reference_type' => $options['reference_type'] ?? null,
-            'reference_id' => $options['reference_id'] ?? null,
+            'wallet_id'       => $model->id,
+            'uuid'            => (string) Str::uuid(),
+            'type'            => $entryType::DEBIT,
+            'status'          => $entryStatus::COMPLETED,
+            'amount'          => bcmul($amount, '-1', $precision),
+            'balance_after'   => $newBalance,
+            'currency'        => $model->currency,
+            'reference_type'  => $options['reference_type'] ?? null,
+            'reference_id'    => $options['reference_id'] ?? null,
             'idempotency_key' => empty($options['idempotency_key'])
                 ? null
                 : $options['idempotency_key'] . '-out',
@@ -344,23 +346,24 @@ class WalletService
         return $entry;
     }
 
-    protected function applyCreditOnLocked(  Model $model, string $amount, array $options, string $direction): Model {
-        $precision = (int) config('wallet.precision', 8);
+    protected function applyCreditOnLocked(Model $model, string $amount, array $options, string $direction): Model
+    {
+        $precision  = (int) config('wallet.precision', 8);
         $newBalance = bcadd((string) $model->balance, $amount, $precision);
 
-        $entryType = config('wallet.enums.entry_type');
+        $entryType   = config('wallet.enums.entry_type');
         $entryStatus = config('wallet.enums.entry_status');
 
         $entry = $model->entries()->create([
-            'wallet_id' => $model->id,
-            'uuid' => (string) Str::uuid(),
-            'type' => $entryType::CREDIT,
-            'status' => $entryStatus::COMPLETED,
-            'amount' => $amount,
-            'balance_after' => $newBalance,
-            'currency' => $model->currency,
-            'reference_type' => $options['reference_type'] ?? null,
-            'reference_id' => $options['reference_id'] ?? null,
+            'wallet_id'       => $model->id,
+            'uuid'            => (string) Str::uuid(),
+            'type'            => $entryType::CREDIT,
+            'status'          => $entryStatus::COMPLETED,
+            'amount'          => $amount,
+            'balance_after'   => $newBalance,
+            'currency'        => $model->currency,
+            'reference_type'  => $options['reference_type'] ?? null,
+            'reference_id'    => $options['reference_id'] ?? null,
             'idempotency_key' => empty($options['idempotency_key'])
                 ? null
                 : $options['idempotency_key'] . '-in',

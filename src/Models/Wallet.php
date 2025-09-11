@@ -16,7 +16,7 @@ class Wallet extends Model
         'label',
         'currency',
         'balance',
-        'meta'
+        'meta',
     ];
 
     protected $casts = ['meta' => 'array', 'balance' => 'decimal:8'];
@@ -35,6 +35,7 @@ class Wallet extends Model
     public function entries(): HasMany
     {
         $entryClass = config('wallet.models.entry');
+
         return $this->hasMany($entryClass);
     }
 }

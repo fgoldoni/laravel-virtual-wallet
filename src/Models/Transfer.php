@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goldoni\LaravelVirtualWallet\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transfer extends Model
 {
@@ -19,12 +19,12 @@ class Transfer extends Model
         'currency',
         'status',
         'idempotency_key',
-        'meta'
+        'meta',
     ];
 
     protected $casts = [
         'meta'   => 'array',
-        'amount' => 'decimal:8'
+        'amount' => 'decimal:8',
     ];
 
     public function __construct(array $attributes = [])

@@ -12,6 +12,7 @@ trait HasWallets
     public function wallets(): MorphMany
     {
         $walletClass = config('wallet.models.wallet');
+
         return $this->morphMany($walletClass, 'owner');
     }
 
@@ -19,6 +20,7 @@ trait HasWallets
     {
         config('wallet.models.wallet');
         $currency = $currency ?: config('wallet.default_currency', 'EUR');
+
         return $this->wallets()->firstOrCreate([
             'label'    => $label,
             'currency' => strtoupper((string) $currency),

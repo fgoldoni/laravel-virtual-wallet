@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goldoni\LaravelVirtualWallet\Models;
 
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Entry extends Model
 {
@@ -23,13 +23,13 @@ class Entry extends Model
         'reference_type',
         'reference_id',
         'idempotency_key',
-        'meta'
+        'meta',
     ];
 
     protected $casts = [
         'meta'          => 'array',
         'amount'        => 'decimal:8',
-        'balance_after' => 'decimal:8'
+        'balance_after' => 'decimal:8',
     ];
 
     public function __construct(array $attributes = [])
