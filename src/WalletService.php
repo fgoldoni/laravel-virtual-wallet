@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Str;
 
 class WalletService
 {
@@ -76,7 +75,6 @@ class WalletService
 
             $entry = $lockedWallet->entries()->create([
                 'wallet_id'       => $lockedWallet->id,
-                'uuid'            => (string) Str::uuid(),
                 'type'            => $entryType::CREDIT,
                 'status'          => $entryStatus::COMPLETED,
                 'amount'          => $amount,
@@ -130,7 +128,6 @@ class WalletService
 
             $entry = $lockedWallet->entries()->create([
                 'wallet_id'       => $lockedWallet->id,
-                'uuid'            => (string) Str::uuid(),
                 'type'            => $entryType::DEBIT,
                 'status'          => $entryStatus::COMPLETED,
                 'amount'          => bcmul($amount, '-1', $precision),
@@ -202,7 +199,6 @@ class WalletService
             }
 
             $transfer = $transferClass::create([
-                'uuid'            => (string) Str::uuid(),
                 'from_wallet_id'  => $fromWallet->id,
                 'to_wallet_id'    => $toWallet->id,
                 'amount'          => $amount,
@@ -333,7 +329,6 @@ class WalletService
 
         $entry = $model->entries()->create([
             'wallet_id'       => $model->id,
-            'uuid'            => (string) Str::uuid(),
             'type'            => $entryType::DEBIT,
             'status'          => $entryStatus::COMPLETED,
             'amount'          => bcmul($amount, '-1', $precision),
@@ -366,7 +361,6 @@ class WalletService
 
         $entry = $model->entries()->create([
             'wallet_id'       => $model->id,
-            'uuid'            => (string) Str::uuid(),
             'type'            => $entryType::CREDIT,
             'status'          => $entryStatus::COMPLETED,
             'amount'          => $amount,

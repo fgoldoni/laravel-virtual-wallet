@@ -225,9 +225,9 @@ Wallet::ensureWallet(string $label, string $currency): \Illuminate\Database\Eloq
 
 | Table              | Key Columns                                                                                               | Constraints                                       |
 | ------------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `wallet_wallets`   | `id`, `owner_type`, `owner_id`, `label`, `currency`, `balance`, `meta`, timestamps                        | Unique: `(owner_type, owner_id, label, currency)` |
-| `wallet_entries`   | `id`, `wallet_id`, `uuid`, `type`, `status`, `amount`, `balance_after`, `currency`, `reference_*`, `meta` | Unique: `(wallet_id, idempotency_key)`            |
-| `wallet_transfers` | `id`, `uuid`, `from_wallet_id`, `to_wallet_id`, `amount`, `currency`, `status`, `idempotency_key`, `meta` | Unique: `idempotency_key`                         |
+| `wallet_wallets`   | `id`, `ulid`, `owner_type`, `owner_id`, `label`, `currency`, `balance`, `meta`, timestamps                        | Unique: `(owner_type, owner_id, label, currency)` |
+| `wallet_entries`   | `id`, `wallet_id`, `ulid`, `type`, `status`, `amount`, `balance_after`, `currency`, `reference_*`, `meta` | Unique: `(wallet_id, idempotency_key)`            |
+| `wallet_transfers` | `id`, `ulid`, `from_wallet_id`, `to_wallet_id`, `amount`, `currency`, `status`, `idempotency_key`, `meta` | Unique: `idempotency_key`                         |
 
 > Table names honor your `table_prefix`.
 

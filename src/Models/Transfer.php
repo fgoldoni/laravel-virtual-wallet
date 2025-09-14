@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Goldoni\LaravelVirtualWallet\Models;
 
+use Goldoni\LaravelVirtualWallet\Models\Concerns\HasExtraUlid;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transfer extends Model
 {
+    use HasExtraUlid;
+
     protected $table;
 
     protected $fillable = [
-        'uuid',
+        'ulid',
         'from_wallet_id',
         'to_wallet_id',
         'amount',

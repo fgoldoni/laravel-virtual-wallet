@@ -15,6 +15,7 @@ return new class extends Migration {
 
         Schema::create($prefix . 'wallets', function (Blueprint $blueprint) use ($driver): void {
             $blueprint->id();
+            $blueprint->ulid()->unique();
             $blueprint->morphs('owner');
             $blueprint->string('label')->default('main');
             $blueprint->string('currency', 3)->index();
@@ -32,8 +33,8 @@ return new class extends Migration {
 
         Schema::create($prefix . 'entries', function (Blueprint $blueprint) use ($prefix, $driver): void {
             $blueprint->id();
+            $blueprint->ulid()->unique();
             $blueprint->foreignId('wallet_id')->constrained($prefix . 'wallets')->cascadeOnDelete();
-            $blueprint->uuid()->unique();
             $blueprint->string('type');
             $blueprint->string('status')->default('COMPLETED');
             $blueprint->decimal('amount', 20, 8);
@@ -56,7 +57,7 @@ return new class extends Migration {
 
         Schema::create($prefix . 'transfers', function (Blueprint $blueprint) use ($prefix, $driver): void {
             $blueprint->id();
-            $blueprint->uuid()->unique();
+            $blueprint->ulid()->unique();
             $blueprint->foreignId('from_wallet_id')->constrained($prefix . 'wallets')->cascadeOnDelete();
             $blueprint->foreignId('to_wallet_id')->constrained($prefix . 'wallets')->cascadeOnDelete();
             $blueprint->decimal('amount', 20, 8);

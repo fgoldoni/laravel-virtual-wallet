@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Goldoni\LaravelVirtualWallet\Models;
 
+use Goldoni\LaravelVirtualWallet\Models\Concerns\HasExtraUlid;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,11 +12,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Entry extends Model
 {
+    use HasExtraUlid;
+
     protected $table;
 
     protected $fillable = [
         'wallet_id',
-        'uuid',
+        'ulid',
         'type',
         'status',
         'amount',
