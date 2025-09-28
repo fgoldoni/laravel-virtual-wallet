@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Goldoni\LaravelVirtualWallet;
 
+use Override;
 use Illuminate\Support\ServiceProvider;
 
 class WalletServiceProvider extends ServiceProvider
 {
+    #[Override]
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/wallet.php', 'wallet');
