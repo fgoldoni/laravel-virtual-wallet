@@ -23,7 +23,7 @@ trait HasWallets
     public function wallet(string $label = 'main', ?string $currency = null): Model
     {
         $currency = strtoupper($currency ?: (string) config('wallet.default_currency', 'EUR'));
-        $memoKey = sprintf('%s|%s|%s|%s', $this->getMorphClass(), $this->getKey(), $label, $currency);
+        $memoKey  = sprintf('%s|%s|%s|%s', $this->getMorphClass(), $this->getKey(), $label, $currency);
 
         return $this->resolvedWallets[$memoKey] ?? $this->resolvedWallets[$memoKey] = DB::transaction(function () use ($label, $currency) {
             $query = $this->wallets()
@@ -37,7 +37,7 @@ trait HasWallets
 
             try {
                 return $this->wallets()->create([
-                    'label' => $label,
+                    'label'    => $label,
                     'currency' => $currency,
                 ]);
             } catch (UniqueConstraintViolationException) {
