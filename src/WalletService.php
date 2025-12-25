@@ -251,8 +251,15 @@ class WalletService
     {
         $model = $this->resolveWallet($label, $currency);
 
-        return (string) $model->balance;
+        $walletClass = config('wallet.models.wallet');
+
+        $freshBalance = $walletClass::query()
+            ->whereKey($model->getKey())
+            ->value('balance');
+
+        return (string) $freshBalance;
     }
+
 
     public function balances(): Collection
     {
