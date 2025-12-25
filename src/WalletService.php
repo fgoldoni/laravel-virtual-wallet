@@ -257,7 +257,7 @@ class WalletService
             ->whereKey($model->getKey())
             ->value('balance');
 
-        return (string) $freshBalance;
+        return (string) ($freshBalance ?? '0');
     }
 
 
