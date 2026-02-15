@@ -46,4 +46,18 @@ class Wallet extends Model
 
         return $this->hasMany($entryClass);
     }
+
+    public function fromTransfers(): HasMany
+    {
+        $transferClass = config('wallet.models.transfer');
+
+        return $this->hasMany($transferClass, 'from_wallet_id');
+    }
+
+    public function toTransfers(): HasMany
+    {
+        $transferClass = config('wallet.models.transfer');
+
+        return $this->hasMany($transferClass, 'to_wallet_id');
+    }
 }
